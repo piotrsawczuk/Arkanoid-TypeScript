@@ -23,7 +23,8 @@ function main() : void {
 
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
+    // if koniec gry draw text i czekaj na spacje
     ball.draw(ctx);
     paddle.draw(ctx);
 

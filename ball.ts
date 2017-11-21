@@ -7,6 +7,7 @@ export class Ball {
     radius : number;
     velocityX : number = this.velocity;
     velocityY : number = -this.velocity;
+    //flaga czy przegralo sie
 
     constructor(x : number, y : number, radius : number) {
         this.x = x;
@@ -31,9 +32,14 @@ export class Ball {
         if (this.y < 0 + this.radius) {
             this.velocityY = -this.velocityY
         }
-        //do zmiany przy paletce
         if (this.y > canvasHeight - this.radius - paddle.height && this.x > paddle.x && this.x < paddle.x + paddle.width) {
-            this.velocityY = -this.velocityY
+            this.velocityY = -this.velocityY;
+            if (this.x < (paddle.x + paddle.width) / 2) {
+                this.velocityX = this.velocityX > 0 ? (-this.velocityX) : (this.velocityX);
+            } else {
+                this.velocityX = this.velocityX > 0 ? (this.velocityX) : (-this.velocityX);
+            }
+            // zakoncz gre, ustaw flage konca gry na true
         }
     }
 }

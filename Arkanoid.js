@@ -27,9 +27,14 @@ var Ball = /** @class */ (function () {
         if (this.y < 0 + this.radius) {
             this.velocityY = -this.velocityY;
         }
-        //do zmiany przy paletce
         if (this.y > main_1.canvasHeight - this.radius - main_1.paddle.height && this.x > main_1.paddle.x && this.x < main_1.paddle.x + main_1.paddle.width) {
             this.velocityY = -this.velocityY;
+            if (this.x < (main_1.paddle.x + main_1.paddle.width) / 2) {
+                this.velocityX = this.velocityX > 0 ? (-this.velocityX) : (this.velocityX);
+            }
+            else {
+                this.velocityX = this.velocityX > 0 ? (this.velocityX) : (-this.velocityX);
+            }
         }
     };
     return Ball;
