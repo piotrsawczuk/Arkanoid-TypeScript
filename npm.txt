@@ -1,0 +1,11 @@
+npm install -g typescript
+npm install -g browserify
+
+w projekcie:
+npm install uniq
+
+do skompilowania
+tsc main.ts
+
+utworzenie jednego g³ownego js
+browserify main.js -o Arkanoid.js
