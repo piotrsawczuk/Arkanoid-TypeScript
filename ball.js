@@ -2,6 +2,7 @@
 exports.__esModule = true;
 var main_1 = require("./main");
 var Ball = /** @class */ (function () {
+    //flaga czy przegralo sie
     function Ball(x, y, radius) {
         this.velocity = 5;
         this.velocityX = this.velocity;
@@ -34,6 +35,7 @@ var Ball = /** @class */ (function () {
             else {
                 this.velocityX = this.velocityX > 0 ? (this.velocityX) : (-this.velocityX);
             }
+            // zakoncz gre, ustaw flage konca gry na true
         }
     };
     return Ball;

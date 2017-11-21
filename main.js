@@ -18,6 +18,7 @@ function main() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // if koniec gry draw text i czekaj na spacje
     ball.draw(ctx);
     exports.paddle.draw(ctx);
     requestAnimationFrame(main);

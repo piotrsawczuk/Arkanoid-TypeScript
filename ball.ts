@@ -30,7 +30,7 @@ export class Ball {
             this.velocityX = -this.velocityX;
         }
         if (this.y < 0 + this.radius) {
-            this.velocityY = -this.velocityY
+            this.velocityY = -this.velocityY;
         }
         if (this.y > canvasHeight - this.radius - paddle.height && this.x > paddle.x && this.x < paddle.x + paddle.width) {
             this.velocityY = -this.velocityY;
