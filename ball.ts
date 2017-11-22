@@ -2,16 +2,20 @@ import {canvasWidth, canvasHeight, paddle} from "./main";
 
 export class Ball {
     velocity : number = 5;
+    startX : number;
+    startY : number;
     x : number;
     y : number;
     radius : number;
     velocityX : number = this.velocity;
     velocityY : number = -this.velocity;
-    //flaga czy przegralo sie
+    gameStarted : boolean = false;
 
     constructor(x : number, y : number, radius : number) {
         this.x = x;
         this.y = y;
+        this.startX = x;
+        this.startY = y;
         this.radius = radius;
     }
 
@@ -23,43 +27,59 @@ export class Ball {
         ctx.closePath();
     }
 
+    updateStartPosition() : void {
+        if (!this.gameStarted) {
+            this.startX = paddle.x + (paddle.width / 2);
+            this.x = this.startX;
+            this.y = this.startY;
+        }
+    }
+
     update() : void {
-        this.x += this.velocityX;
-        this.y += this.velocityY;
-        if (this.x > canvasWidth - this.radius || this.x < 0 + this.radius) {
-            this.velocityX = -this.velocityX;
-        }
-        if (this.y < 0 + this.radius) {
-            this.velocityY = -this.velocityY;
-        }
-        if (this.y > canvasHeight - paddle.height && this.x > paddle.x && this.x < paddle.x + paddle.width) {
-            this.velocityX = -this.velocityX;
-        } else {
-            if (this.y > canvasHeight - this.radius - paddle.height
-                && this.y < canvasHeight - this.radius
-                && this.x > paddle.x 
-                && this.x < paddle.x + paddle.width
-            ) {
+        if (this.gameStarted) {
+            this.x += this.velocityX;
+            this.y += this.velocityY;
+            if (this.x > canvasWidth - this.radius || this.x < 0 + this.radius) {
+                this.velocityX = -this.velocityX;
+            }
+            if (this.y < 0 + this.radius) {
                 this.velocityY = -this.velocityY;
-                if (this.velocityX > 0) {
-                    if (this.x < (paddle.x + (paddle.width / 2))) {
-                        this.velocityX = -this.velocityX;
-                    } else {
-                        this.velocityX = this.velocityX;
-                    }
-                } else
-                if (this.velocityX < 0) {
-                    if (this.x < (paddle.x + (paddle.width / 2))) {
-                        this.velocityX = this.velocityX;
-                    } else {
-                        this.velocityX = -this.velocityX;
+            }
+            if (this.y > canvasHeight + 50) {
+                this.gameStarted = false;
+                this.velocityX = this.velocity;
+                this.velocityY = -this.velocity;
+            } else
+            if (this.y > canvasHeight - paddle.height && this.x > paddle.x && this.x < paddle.x + paddle.width) {
+                this.velocityX = -this.velocityX;
+            } else {
+                if (this.y > canvasHeight - this.radius - paddle.height
+                    && this.y < canvasHeight - this.radius
+                    && this.x > paddle.x 
+                    && this.x < paddle.x + paddle.width
+                ) {
+                    this.velocityY = -this.velocityY;
+                    if (this.velocityX > 0) {
+                        if (this.x < (paddle.x + (paddle.width / 2))) {
+                            this.velocityX = -this.velocityX;
+                        } else {
+                            this.velocityX = this.velocityX;
+                        }
+                    } else
+                    if (this.velocityX < 0) {
+                        if (this.x < (paddle.x + (paddle.width / 2))) {
+                            this.velocityX = this.velocityX;
+                        } else {
+                            this.velocityX = -this.velocityX;
+                        }
                     }
                 }
             }
         }
-
-            // zmienna globalna czy spacja kliknieta, updatuje x i ruszam kladka, po spacji puszczam piłeczke,
-            // po przegranej ustawiam flage spacji na false i oczekuje na spacje i odejmuje punkty
-            // zakoncz gre, ustaw flage konca gry na true
     }
+        // zmienna globalna czy spacja kliknieta, updatuje x i ruszam kladka, po spacji puszczam piłeczke,
+        // po przegranej ustawiam flage spacji na false i oczekuje na spacje i odejmuje punkty
+        // zakoncz gre, ustaw flage konca gry na true
+        
+    
 }

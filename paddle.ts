@@ -1,4 +1,4 @@
-import {canvasWidth, canvasHeight, leftKeyPressed, rightKeyPressed} from "./main";
+import {canvasWidth, canvasHeight, leftKeyPressed, rightKeyPressed} from './main';
 
 export class Paddle {
     width : number = 120;
