@@ -32,26 +32,34 @@ var Ball = /** @class */ (function () {
         if (this.gameStarted) {
             this.x += this.velocityX;
             this.y += this.velocityY;
+            // ściany
             if (this.x > main_1.canvasWidth - this.radius || this.x < 0 + this.radius) {
                 this.velocityX = -this.velocityX;
             }
+            // sufit
             if (this.y < 0 + this.radius) {
                 this.velocityY = -this.velocityY;
             }
+            // piłka spadła
             if (this.y > main_1.canvasHeight + 50) {
+                main_1.decLives();
                 this.gameStarted = false;
                 this.velocityX = this.velocity;
                 this.velocityY = -this.velocity;
             }
-            else if (this.y > main_1.canvasHeight - main_1.paddle.height && this.x > main_1.paddle.x && this.x < main_1.paddle.x + main_1.paddle.width) {
+            else 
+            // odbicie od ścianki kładki
+            if (this.y > main_1.canvasHeight - main_1.paddle.height && this.x > main_1.paddle.x && this.x < main_1.paddle.x + main_1.paddle.width) {
                 this.velocityX = -this.velocityX;
             }
             else {
+                // odbicie od kładki
                 if (this.y > main_1.canvasHeight - this.radius - main_1.paddle.height
                     && this.y < main_1.canvasHeight - this.radius
                     && this.x > main_1.paddle.x
                     && this.x < main_1.paddle.x + main_1.paddle.width) {
                     this.velocityY = -this.velocityY;
+                    // gdy leci w prawo
                     if (this.velocityX > 0) {
                         if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
                             this.velocityX = -this.velocityX;
@@ -60,7 +68,9 @@ var Ball = /** @class */ (function () {
                             this.velocityX = this.velocityX;
                         }
                     }
-                    else if (this.velocityX < 0) {
+                    else 
+                    // gdy leci w lewo
+                    if (this.velocityX < 0) {
                         if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
                             this.velocityX = this.velocityX;
                         }
@@ -82,28 +92,48 @@ exports.__esModule = true;
 var ball_1 = require("./ball");
 var paddle_1 = require("./paddle");
 var canvas = document.querySelector('#canvas');
-// canvas.width = window.innerWidth;
-// canvas.height =  window.innerHeight;
+// export var canvasWidth = canvas.width = window.innerWidth;
+// export var canvasHeight = canvas.height = window.innerHeight;
 exports.canvasWidth = canvas.width = 800;
 exports.canvasHeight = canvas.height = 600;
 exports.leftKeyPressed = false;
 exports.rightKeyPressed = false;
+exports.lives = 2;
+function decLives() {
+    exports.lives--;
+}
+exports.decLives = decLives;
 var ctx = canvas.getContext('2d');
 exports.paddle = new paddle_1.Paddle();
 var ballRadius = 10;
 var ball = new ball_1.Ball(canvas.width / 2, canvas.height - ballRadius - exports.paddle.height, ballRadius);
 function main() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     ball.updateStartPosition();
     ball.update();
     exports.paddle.update();
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    if (!ball.gameStarted) {
-        ctx.fillStyle = '#3599DD';
-        ctx.font = '28px Roboto';
+    ctx.fillStyle = '#3599DD';
+    if (exports.lives < 0) {
+        ctx.textAlign = "right";
+        ctx.font = '20px Roboto';
+        ctx.fillText("Lives: " + 0, canvas.width - 10, 30);
         ctx.textAlign = "center";
-        ctx.fillText("Press SPACEBAR to start", canvas.width / 2, canvas.height / 2);
+        ctx.font = '40px Roboto';
+        ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+        ctx.font = '20px Roboto';
+        ctx.fillText("Press SPACEBAR to start new game", canvas.width / 2, (canvas.height / 2) + 50);
+    }
+    else {
+        ctx.textAlign = "right";
+        ctx.font = '20px Roboto';
+        ctx.fillText("Lives: " + exports.lives, canvas.width - 10, 30);
+        if (!ball.gameStarted) {
+            ctx.textAlign = "center";
+            ctx.font = '28px Roboto';
+            ctx.fillText("Press SPACEBAR to start", canvas.width / 2, canvas.height / 2);
+        }
     }
     ball.draw(ctx);
     exports.paddle.draw(ctx);
@@ -127,6 +157,9 @@ function keyUpHandler(e) {
 }
 function spacePressedHandler(e) {
     if (e.keyCode == 32) {
+        if (exports.lives < 0) {
+            exports.lives = 2;
+        }
         ball.gameStarted = true;
     }
 }

@@ -31,26 +31,34 @@ var Ball = /** @class */ (function () {
         if (this.gameStarted) {
             this.x += this.velocityX;
             this.y += this.velocityY;
+            // ściany
             if (this.x > main_1.canvasWidth - this.radius || this.x < 0 + this.radius) {
                 this.velocityX = -this.velocityX;
             }
+            // sufit
             if (this.y < 0 + this.radius) {
                 this.velocityY = -this.velocityY;
             }
+            // piłka spadła
             if (this.y > main_1.canvasHeight + 50) {
+                main_1.decLives();
                 this.gameStarted = false;
                 this.velocityX = this.velocity;
                 this.velocityY = -this.velocity;
             }
-            else if (this.y > main_1.canvasHeight - main_1.paddle.height && this.x > main_1.paddle.x && this.x < main_1.paddle.x + main_1.paddle.width) {
+            else 
+            // odbicie od ścianki kładki
+            if (this.y > main_1.canvasHeight - main_1.paddle.height && this.x > main_1.paddle.x && this.x < main_1.paddle.x + main_1.paddle.width) {
                 this.velocityX = -this.velocityX;
             }
             else {
+                // odbicie od kładki
                 if (this.y > main_1.canvasHeight - this.radius - main_1.paddle.height
                     && this.y < main_1.canvasHeight - this.radius
                     && this.x > main_1.paddle.x
                     && this.x < main_1.paddle.x + main_1.paddle.width) {
                     this.velocityY = -this.velocityY;
+                    // gdy leci w prawo
                     if (this.velocityX > 0) {
                         if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
                             this.velocityX = -this.velocityX;
@@ -59,7 +67,9 @@ var Ball = /** @class */ (function () {
                             this.velocityX = this.velocityX;
                         }
                     }
-                    else if (this.velocityX < 0) {
+                    else 
+                    // gdy leci w lewo
+                    if (this.velocityX < 0) {
                         if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
                             this.velocityX = this.velocityX;
                         }

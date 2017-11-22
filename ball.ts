@@ -1,4 +1,4 @@
-import {canvasWidth, canvasHeight, paddle} from "./main";
+import {canvasWidth, canvasHeight, paddle, decLives} from './main';
 
 export class Ball {
     velocity : number = 5;
@@ -39,26 +39,33 @@ export class Ball {
         if (this.gameStarted) {
             this.x += this.velocityX;
             this.y += this.velocityY;
+            // ściany
             if (this.x > canvasWidth - this.radius || this.x < 0 + this.radius) {
                 this.velocityX = -this.velocityX;
             }
+            // sufit
             if (this.y < 0 + this.radius) {
                 this.velocityY = -this.velocityY;
             }
+            // piłka spadła
             if (this.y > canvasHeight + 50) {
+                decLives();
                 this.gameStarted = false;
                 this.velocityX = this.velocity;
                 this.velocityY = -this.velocity;
             } else
+            // odbicie od ścianki kładki
             if (this.y > canvasHeight - paddle.height && this.x > paddle.x && this.x < paddle.x + paddle.width) {
                 this.velocityX = -this.velocityX;
             } else {
+                // odbicie od kładki
                 if (this.y > canvasHeight - this.radius - paddle.height
                     && this.y < canvasHeight - this.radius
                     && this.x > paddle.x 
                     && this.x < paddle.x + paddle.width
                 ) {
                     this.velocityY = -this.velocityY;
+                    // gdy leci w prawo
                     if (this.velocityX > 0) {
                         if (this.x < (paddle.x + (paddle.width / 2))) {
                             this.velocityX = -this.velocityX;
@@ -66,6 +73,7 @@ export class Ball {
                             this.velocityX = this.velocityX;
                         }
                     } else
+                    // gdy leci w lewo
                     if (this.velocityX < 0) {
                         if (this.x < (paddle.x + (paddle.width / 2))) {
                             this.velocityX = this.velocityX;
