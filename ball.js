@@ -27,16 +27,36 @@ var Ball = /** @class */ (function () {
         if (this.y < 0 + this.radius) {
             this.velocityY = -this.velocityY;
         }
-        if (this.y > main_1.canvasHeight - this.radius - main_1.paddle.height && this.x > main_1.paddle.x && this.x < main_1.paddle.x + main_1.paddle.width) {
-            this.velocityY = -this.velocityY;
-            if (this.x < (main_1.paddle.x + main_1.paddle.width) / 2) {
-                this.velocityX = this.velocityX > 0 ? (-this.velocityX) : (this.velocityX);
-            }
-            else {
-                this.velocityX = this.velocityX > 0 ? (this.velocityX) : (-this.velocityX);
-            }
-            // zakoncz gre, ustaw flage konca gry na true
+        if (this.y > main_1.canvasHeight - main_1.paddle.height && this.x > main_1.paddle.x && this.x < main_1.paddle.x + main_1.paddle.width) {
+            this.velocityX = -this.velocityX;
         }
+        else {
+            if (this.y > main_1.canvasHeight - this.radius - main_1.paddle.height
+                && this.y < main_1.canvasHeight - this.radius
+                && this.x > main_1.paddle.x
+                && this.x < main_1.paddle.x + main_1.paddle.width) {
+                this.velocityY = -this.velocityY;
+                if (this.velocityX > 0) {
+                    if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
+                        this.velocityX = -this.velocityX;
+                    }
+                    else {
+                        this.velocityX = this.velocityX;
+                    }
+                }
+                else if (this.velocityX < 0) {
+                    if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
+                        this.velocityX = this.velocityX;
+                    }
+                    else {
+                        this.velocityX = -this.velocityX;
+                    }
+                }
+            }
+        }
+        // zmienna globalna czy spacja kliknieta, updatuje x i ruszam kladka, po spacji puszczam piłeczke,
+        // po przegranej ustawiam flage spacji na false i oczekuje na spacje i odejmuje punkty
+        // zakoncz gre, ustaw flage konca gry na true
     };
     return Ball;
 }());

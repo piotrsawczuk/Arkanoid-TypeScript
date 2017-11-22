@@ -28,16 +28,36 @@ var Ball = /** @class */ (function () {
         if (this.y < 0 + this.radius) {
             this.velocityY = -this.velocityY;
         }
-        if (this.y > main_1.canvasHeight - this.radius - main_1.paddle.height && this.x > main_1.paddle.x && this.x < main_1.paddle.x + main_1.paddle.width) {
-            this.velocityY = -this.velocityY;
-            if (this.x < (main_1.paddle.x + main_1.paddle.width) / 2) {
-                this.velocityX = this.velocityX > 0 ? (-this.velocityX) : (this.velocityX);
-            }
-            else {
-                this.velocityX = this.velocityX > 0 ? (this.velocityX) : (-this.velocityX);
-            }
-            // zakoncz gre, ustaw flage konca gry na true
+        if (this.y > main_1.canvasHeight - main_1.paddle.height && this.x > main_1.paddle.x && this.x < main_1.paddle.x + main_1.paddle.width) {
+            this.velocityX = -this.velocityX;
         }
+        else {
+            if (this.y > main_1.canvasHeight - this.radius - main_1.paddle.height
+                && this.y < main_1.canvasHeight - this.radius
+                && this.x > main_1.paddle.x
+                && this.x < main_1.paddle.x + main_1.paddle.width) {
+                this.velocityY = -this.velocityY;
+                if (this.velocityX > 0) {
+                    if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
+                        this.velocityX = -this.velocityX;
+                    }
+                    else {
+                        this.velocityX = this.velocityX;
+                    }
+                }
+                else if (this.velocityX < 0) {
+                    if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
+                        this.velocityX = this.velocityX;
+                    }
+                    else {
+                        this.velocityX = -this.velocityX;
+                    }
+                }
+            }
+        }
+        // zmienna globalna czy spacja kliknieta, updatuje x i ruszam kladka, po spacji puszczam piłeczke,
+        // po przegranej ustawiam flage spacji na false i oczekuje na spacje i odejmuje punkty
+        // zakoncz gre, ustaw flage konca gry na true
     };
     return Ball;
 }());
@@ -49,11 +69,13 @@ exports.__esModule = true;
 var ball_1 = require("./ball");
 var paddle_1 = require("./paddle");
 var canvas = document.querySelector('#canvas');
-// canvas.width = window.innerHeight;
+// canvas.width = window.innerWidth;
+// canvas.height =  window.innerHeight;
 exports.canvasWidth = canvas.width = 800;
 exports.canvasHeight = canvas.height = 600;
 exports.leftKeyPressed = false;
 exports.rightKeyPressed = false;
+exports.spaceKeyPressed = false;
 var ctx = canvas.getContext('2d');
 exports.paddle = new paddle_1.Paddle();
 var ballRadius = 10;
@@ -64,7 +86,6 @@ function main() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    // if koniec gry draw text i czekaj na spacje
     ball.draw(ctx);
     exports.paddle.draw(ctx);
     requestAnimationFrame(main);
@@ -72,6 +93,7 @@ function main() {
 main();
 addEventListener("keydown", keyDownHandler, false);
 addEventListener("keyup", keyUpHandler, false);
+addEventListener("keypress", spacePressedHandler, false);
 function keyDownHandler(e) {
     if (e.keyCode == 37)
         exports.leftKeyPressed = true;
@@ -83,6 +105,11 @@ function keyUpHandler(e) {
         exports.leftKeyPressed = false;
     else if (e.keyCode == 39)
         exports.rightKeyPressed = false;
+}
+function spacePressedHandler(e) {
+    if (e.keyCode == 32) {
+        exports.spaceKeyPressed = true;
+    }
 }
 
 },{"./ball":1,"./paddle":3}],3:[function(require,module,exports){

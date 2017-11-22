@@ -32,14 +32,34 @@ export class Ball {
         if (this.y < 0 + this.radius) {
             this.velocityY = -this.velocityY;
         }
-        if (this.y > canvasHeight - this.radius - paddle.height && this.x > paddle.x && this.x < paddle.x + paddle.width) {
-            this.velocityY = -this.velocityY;
-            if (this.x < (paddle.x + paddle.width) / 2) {
-                this.velocityX = this.velocityX > 0 ? (-this.velocityX) : (this.velocityX);
-            } else {
-                this.velocityX = this.velocityX > 0 ? (this.velocityX) : (-this.velocityX);
+        if (this.y > canvasHeight - paddle.height && this.x > paddle.x && this.x < paddle.x + paddle.width) {
+            this.velocityX = -this.velocityX;
+        } else {
+            if (this.y > canvasHeight - this.radius - paddle.height
+                && this.y < canvasHeight - this.radius
+                && this.x > paddle.x 
+                && this.x < paddle.x + paddle.width
+            ) {
+                this.velocityY = -this.velocityY;
+                if (this.velocityX > 0) {
+                    if (this.x < (paddle.x + (paddle.width / 2))) {
+                        this.velocityX = -this.velocityX;
+                    } else {
+                        this.velocityX = this.velocityX;
+                    }
+                } else
+                if (this.velocityX < 0) {
+                    if (this.x < (paddle.x + (paddle.width / 2))) {
+                        this.velocityX = this.velocityX;
+                    } else {
+                        this.velocityX = -this.velocityX;
+                    }
+                }
             }
-            // zakoncz gre, ustaw flage konca gry na true
         }
+
+            // zmienna globalna czy spacja kliknieta, updatuje x i ruszam kladka, po spacji puszczam piłeczke,
+            // po przegranej ustawiam flage spacji na false i oczekuje na spacje i odejmuje punkty
+            // zakoncz gre, ustaw flage konca gry na true
     }
 }

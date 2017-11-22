@@ -3,11 +3,13 @@ exports.__esModule = true;
 var ball_1 = require("./ball");
 var paddle_1 = require("./paddle");
 var canvas = document.querySelector('#canvas');
-// canvas.width = window.innerHeight;
+// canvas.width = window.innerWidth;
+// canvas.height =  window.innerHeight;
 exports.canvasWidth = canvas.width = 800;
 exports.canvasHeight = canvas.height = 600;
 exports.leftKeyPressed = false;
 exports.rightKeyPressed = false;
+exports.spaceKeyPressed = false;
 var ctx = canvas.getContext('2d');
 exports.paddle = new paddle_1.Paddle();
 var ballRadius = 10;
@@ -18,7 +20,6 @@ function main() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    // if koniec gry draw text i czekaj na spacje
     ball.draw(ctx);
     exports.paddle.draw(ctx);
     requestAnimationFrame(main);
@@ -26,6 +27,7 @@ function main() {
 main();
 addEventListener("keydown", keyDownHandler, false);
 addEventListener("keyup", keyUpHandler, false);
+addEventListener("keypress", spacePressedHandler, false);
 function keyDownHandler(e) {
     if (e.keyCode == 37)
         exports.leftKeyPressed = true;
@@ -37,4 +39,9 @@ function keyUpHandler(e) {
         exports.leftKeyPressed = false;
     else if (e.keyCode == 39)
         exports.rightKeyPressed = false;
+}
+function spacePressedHandler(e) {
+    if (e.keyCode == 32) {
+        exports.spaceKeyPressed = true;
+    }
 }
