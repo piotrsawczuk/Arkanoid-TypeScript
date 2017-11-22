@@ -1,4 +1,4 @@
-import {canvasWidth, canvasHeight, paddle, decLives} from './main';
+import {canvasWidth, canvasHeight, paddle, decLives, addPoint} from './main';
 
 export class Ball {
     velocity : number = 5;

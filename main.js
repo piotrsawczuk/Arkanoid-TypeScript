@@ -3,18 +3,26 @@ exports.__esModule = true;
 var ball_1 = require("./ball");
 var paddle_1 = require("./paddle");
 var canvas = document.querySelector('#canvas');
+var ctx = canvas.getContext('2d');
 // export var canvasWidth = canvas.width = window.innerWidth;
 // export var canvasHeight = canvas.height = window.innerHeight;
 exports.canvasWidth = canvas.width = 800;
 exports.canvasHeight = canvas.height = 600;
 exports.leftKeyPressed = false;
 exports.rightKeyPressed = false;
-exports.lives = 2;
+var gamePaused = false;
+var numberOfLives = 2;
+exports.lives = numberOfLives;
 function decLives() {
     exports.lives--;
 }
 exports.decLives = decLives;
-var ctx = canvas.getContext('2d');
+var startingPoints = 0;
+exports.points = startingPoints;
+function addPoint() {
+    exports.points++;
+}
+exports.addPoint = addPoint;
 exports.paddle = new paddle_1.Paddle();
 var ballRadius = 10;
 var ball = new ball_1.Ball(canvas.width / 2, canvas.height - ballRadius - exports.paddle.height, ballRadius);
@@ -22,10 +30,25 @@ function main() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ball.updateStartPosition();
-    ball.update();
-    exports.paddle.update();
     ctx.fillStyle = '#3599DD';
+    if (!gamePaused) {
+        ctx.textAlign = "center";
+        ctx.font = '20px Roboto';
+        ctx.globalAlpha = 0.3;
+        ctx.fillText("Press P for pause", canvas.width / 2, 30);
+        ctx.globalAlpha = 1;
+        ball.updateStartPosition();
+        ball.update();
+        exports.paddle.update();
+    }
+    else {
+        ctx.textAlign = "center";
+        ctx.font = '70px Roboto';
+        ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
+    }
+    ctx.textAlign = "left";
+    ctx.font = '20px Roboto';
+    ctx.fillText("Points: " + exports.points, 10, 30);
     if (exports.lives < 0) {
         ctx.textAlign = "right";
         ctx.font = '20px Roboto';
@@ -51,16 +74,17 @@ function main() {
     requestAnimationFrame(main);
 }
 main();
-addEventListener("keydown", keyDownHandler, false);
-addEventListener("keyup", keyUpHandler, false);
+addEventListener("keydown", arrowKeyDownHandler, false);
+addEventListener("keyup", arrowKeyUpHandler, false);
 addEventListener("keypress", spacePressedHandler, false);
-function keyDownHandler(e) {
+addEventListener("keypress", pauseHandler, false);
+function arrowKeyDownHandler(e) {
     if (e.keyCode == 37)
         exports.leftKeyPressed = true;
     else if (e.keyCode == 39)
         exports.rightKeyPressed = true;
 }
-function keyUpHandler(e) {
+function arrowKeyUpHandler(e) {
     if (e.keyCode == 37)
         exports.leftKeyPressed = false;
     else if (e.keyCode == 39)
@@ -69,8 +93,24 @@ function keyUpHandler(e) {
 function spacePressedHandler(e) {
     if (e.keyCode == 32) {
         if (exports.lives < 0) {
-            exports.lives = 2;
+            exports.lives = numberOfLives;
+            exports.points = startingPoints;
         }
         ball.gameStarted = true;
+    }
+}
+function pauseHandler(e) {
+    if (e.keyCode == 112) {
+        togglePause();
+    }
+}
+function togglePause() {
+    if (!gamePaused) {
+        if (ball.gameStarted) {
+            gamePaused = true;
+        }
+    }
+    else if (gamePaused) {
+        gamePaused = false;
     }
 }

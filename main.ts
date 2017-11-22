@@ -2,18 +2,27 @@ import { Ball } from './ball';
 import { Paddle } from './paddle';
 
 let canvas:HTMLCanvasElement = document.querySelector('#canvas');
+let ctx = canvas.getContext('2d');
 // export var canvasWidth = canvas.width = window.innerWidth;
 // export var canvasHeight = canvas.height = window.innerHeight;
 export var canvasWidth = canvas.width = 800;
 export var canvasHeight = canvas.height = 600;
+
 export var leftKeyPressed : boolean = false;
 export var rightKeyPressed : boolean = false;
-export var lives : number = 2;
+var gamePaused : boolean = false;
+
+const numberOfLives : number = 2;
+export var lives : number = numberOfLives;
 export function decLives() : void {
     lives--;
 }
 
-let ctx = canvas.getContext('2d');
+const startingPoints : number = 0;
+export var points : number = startingPoints;
+export function addPoint() : void {
+    points++;
+}
 
 export let paddle : Paddle = new Paddle();
 let ballRadius : number = 10;
@@ -23,12 +32,27 @@ function main() : void {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    ball.updateStartPosition();
-    ball.update();
-    paddle.update();
-
     ctx.fillStyle = '#3599DD';
+
+    if (!gamePaused) {
+        ctx.textAlign = "center";
+        ctx.font = '20px Roboto';
+        ctx.globalAlpha=0.3;
+        ctx.fillText("Press P for pause", canvas.width / 2, 30);
+        ctx.globalAlpha=1;
+
+        ball.updateStartPosition();
+        ball.update();
+        paddle.update();
+    } else {
+        ctx.textAlign = "center";
+        ctx.font = '70px Roboto';
+        ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
+    }
+    
+    ctx.textAlign = "left";
+    ctx.font = '20px Roboto';
+    ctx.fillText("Points: " + points, 10, 30);
     if (lives < 0) {
         ctx.textAlign = "right";
         ctx.font = '20px Roboto';
@@ -51,23 +75,24 @@ function main() : void {
 
     ball.draw(ctx);
     paddle.draw(ctx);
-
+    
     requestAnimationFrame(main);
 }
 main();
 
-addEventListener("keydown", keyDownHandler, false);
-addEventListener("keyup", keyUpHandler, false);
+addEventListener("keydown", arrowKeyDownHandler, false);
+addEventListener("keyup", arrowKeyUpHandler, false);
 addEventListener("keypress", spacePressedHandler, false);
+addEventListener("keypress", pauseHandler, false);
 
-function keyDownHandler(e) : void {
+function arrowKeyDownHandler(e) : void {
     if (e.keyCode == 37)
         leftKeyPressed = true;
     else if (e.keyCode == 39)
         rightKeyPressed = true;     
 }
 
-function keyUpHandler(e) : void {
+function arrowKeyUpHandler(e) : void {
     if (e.keyCode == 37)
         leftKeyPressed = false;
     else if (e.keyCode == 39)   
@@ -77,8 +102,26 @@ function keyUpHandler(e) : void {
 function spacePressedHandler(e) : void {
     if (e.keyCode == 32) {
         if (lives < 0) {
-            lives = 2;
+            lives = numberOfLives;
+            points = startingPoints;
         }
         ball.gameStarted = true;
+    }
+}
+
+function pauseHandler(e) : void {
+    if (e.keyCode == 112) {
+        togglePause();
+    }
+}
+
+function togglePause() {
+    if (!gamePaused) {
+        if (ball.gameStarted) {
+            gamePaused = true;
+        }
+    } else
+    if (gamePaused) {
+        gamePaused = false;
     }
 }
