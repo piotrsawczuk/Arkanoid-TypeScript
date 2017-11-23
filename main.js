@@ -12,13 +12,15 @@ exports.canvasHeight = canvas.height = 600;
 exports.leftKeyPressed = false;
 exports.rightKeyPressed = false;
 var gamePaused = false;
-var numberOfLives = 2;
+// set 2 after tests
+var numberOfLives = 1;
 exports.lives = numberOfLives;
 function decLives() {
     exports.lives--;
 }
 exports.decLives = decLives;
 var startingPoints = 0;
+var maxPoints;
 exports.points = startingPoints;
 function addPoint() {
     exports.points++;
@@ -27,27 +29,28 @@ exports.addPoint = addPoint;
 exports.paddle = new paddle_1.Paddle();
 var ballRadius = 10;
 var ball = new ball_1.Ball(canvas.width / 2, canvas.height - ballRadius - exports.paddle.height, ballRadius);
-var brickColumnCount = 6;
-var brickRowCount = 4;
+exports.brickColumnCount = 6;
+exports.brickRowCount = 4;
 var brickPadding = 3;
 var brickOffsetTop = 100;
 // var brickOffset = (canvasWidth - (brickColumnCount - 1) * brickPadding - brickWidth * brickColumnCount) / 2;
 // var brickWidth = 100;
 var brickOffset = 80;
-var brickWidth = (exports.canvasWidth - 2 * brickOffset - (brickColumnCount - 1) * brickPadding) / brickColumnCount;
+var brickWidth = (exports.canvasWidth - 2 * brickOffset - (exports.brickColumnCount - 1) * brickPadding) / exports.brickColumnCount;
 var brickHeight = 30;
 exports.bricks = [];
 var tempOffsetLeft = brickOffset;
 var tempOffsetTop = brickOffsetTop;
-for (var i = 0; i < brickColumnCount; i++) {
+for (var i = 0; i < exports.brickColumnCount; i++) {
     exports.bricks[i] = [];
-    for (var j = 0; j < brickRowCount; j++) {
+    for (var j = 0; j < exports.brickRowCount; j++) {
         exports.bricks[i][j] = new brick_1.Brick(tempOffsetLeft, tempOffsetTop, brickWidth, brickHeight);
         tempOffsetTop += brickHeight + brickPadding;
     }
     tempOffsetTop = brickOffsetTop;
     tempOffsetLeft += brickWidth + brickPadding;
 }
+maxPoints = exports.brickColumnCount * exports.brickRowCount;
 function main() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#ffffff';
@@ -59,6 +62,7 @@ function main() {
         ctx.globalAlpha = 0.3;
         ctx.fillText("Press P for pause", canvas.width / 2, 30);
         ctx.globalAlpha = 1;
+        ball.checkIfWin(exports.points, maxPoints);
         ball.updateStartPosition();
         ball.update();
         exports.paddle.update();
@@ -85,14 +89,21 @@ function main() {
         ctx.textAlign = "right";
         ctx.font = '20px Roboto';
         ctx.fillText("Lives: " + exports.lives, canvas.width - 10, 30);
-        if (!ball.gameStarted) {
+        if (!ball.gameStarted && exports.points >= maxPoints) {
+            ctx.textAlign = "center";
+            ctx.font = '40px Roboto';
+            ctx.fillText("YOU WIN", canvas.width / 2, canvas.height / 2);
+            ctx.font = '20px Roboto';
+            ctx.fillText("Press SPACEBAR to start new game", canvas.width / 2, (canvas.height / 2) + 50);
+        }
+        else if (!ball.gameStarted) {
             ctx.textAlign = "center";
             ctx.font = '28px Roboto';
             ctx.fillText("Press SPACEBAR to start", canvas.width / 2, canvas.height / 2);
         }
     }
-    for (var i = 0; i < brickColumnCount; i++) {
-        for (var j = 0; j < brickRowCount; j++) {
+    for (var i = 0; i < exports.brickColumnCount; i++) {
+        for (var j = 0; j < exports.brickRowCount; j++) {
             if (exports.bricks[i][j].active)
                 exports.bricks[i][j].draw(ctx);
         }
@@ -121,9 +132,14 @@ function arrowKeyUpHandler(e) {
 }
 function spacePressedHandler(e) {
     if (e.keyCode == 32) {
-        if (exports.lives < 0) {
+        if (exports.lives < 0 || exports.points >= maxPoints) {
             exports.lives = numberOfLives;
             exports.points = startingPoints;
+            for (var i = 0; i < exports.brickColumnCount; i++) {
+                for (var j = 0; j < exports.brickRowCount; j++) {
+                    exports.bricks[i][j].active = true;
+                }
+            }
         }
         ball.gameStarted = true;
     }
@@ -143,52 +159,3 @@ function togglePause() {
         gamePaused = false;
     }
 }
-// function mouseMoveHandler(e) {
-//     var relativeX = e.clientX - canvas.offsetLeft;
-//     if(relativeX > 0 && relativeX < canvas.width) {
-//         paddle.x = relativeX - paddle.width/2;
-//     }
-// }
-// var brickRowCount = 3;
-// var brickColumnCount = 5;
-// var brickWidth = 75;
-// var brickHeight = 20;
-// var brickPadding = 10;
-// var brickOffsetTop = 30;
-// var brickOffsetLeft = 30;
-// var bricks = [];
-// for(let c=0; c<brickColumnCount; c++) {
-//     bricks[c] = [];
-//     for(let r=0; r<brickRowCount; r++) {
-//         bricks[c][r] = { x: 0, y: 0 };
-//     }
-// }
-// function drawBricks() {
-//     for(let c=0; c<brickColumnCount; c++) {
-//         for(let r=0; r<brickRowCount; r++) {
-//             var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
-//             var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
-//             bricks[c][r].x = brickX;
-//             bricks[c][r].y = brickY;
-//             ctx.beginPath();
-//             ctx.rect(brickX, brickY, brickWidth, brickHeight);
-//             ctx.fillStyle = "#0095DD";
-//             ctx.fill();
-//             ctx.closePath();
-//         }
-//     }
-// }
-// function collisionDetection() {
-//     for(let c=0; c<brickColumnCount; c++) {
-//         for(let r=0; r<brickRowCount; r++) {
-//             var b = bricks[c][r];
-//             if(b.status == 1) {
-//                 if(ball.x > b.x && ball.x < b.x+brickWidth && ball.y > b.y && ball.y < b.y+brickHeight) {
-//                     ball.velocityY = -ball.velocityY;
-//                     // dy = -dy;
-//                     b.status = 0;
-//                 }
-//             }
-//         }
-//     }
-// }

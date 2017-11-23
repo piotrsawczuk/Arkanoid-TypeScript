@@ -31,51 +31,83 @@ var Ball = /** @class */ (function () {
         if (this.gameStarted) {
             this.x += this.velocityX;
             this.y += this.velocityY;
-            // ściany
-            if (this.x > main_1.canvasWidth - this.radius || this.x < 0 + this.radius) {
-                this.velocityX = -this.velocityX;
-            }
-            // sufit
-            if (this.y < 0 + this.radius) {
+            this.checkCollisions();
+        }
+    };
+    Ball.prototype.checkIfWin = function (points, maxPoints) {
+        if (points >= maxPoints) {
+            this.gameStarted = false;
+            this.velocityX = this.velocity;
+            this.velocityY = -this.velocity;
+        }
+    };
+    Ball.prototype.checkCollisions = function () {
+        // sides
+        if (this.x > main_1.canvasWidth - this.radius || this.x < 0 + this.radius) {
+            this.velocityX = -this.velocityX;
+        }
+        // top
+        if (this.y < 0 + this.radius) {
+            this.velocityY = -this.velocityY;
+        }
+        // below
+        if (this.y > main_1.canvasHeight + 50) {
+            main_1.decLives();
+            this.gameStarted = false;
+            this.velocityX = this.velocity;
+            this.velocityY = -this.velocity;
+        }
+        else 
+        // paddle side
+        if (this.y > main_1.canvasHeight - main_1.paddle.height && this.x > main_1.paddle.x && this.x < main_1.paddle.x + main_1.paddle.width) {
+            this.velocityX = -this.velocityX;
+        }
+        else {
+            // paddle
+            if (this.y > main_1.canvasHeight - this.radius - main_1.paddle.height
+                && this.y < main_1.canvasHeight - this.radius
+                && this.x > main_1.paddle.x
+                && this.x < main_1.paddle.x + main_1.paddle.width) {
                 this.velocityY = -this.velocityY;
-            }
-            // piłka spadła
-            if (this.y > main_1.canvasHeight + 50) {
-                main_1.decLives();
-                this.gameStarted = false;
-                this.velocityX = this.velocity;
-                this.velocityY = -this.velocity;
-            }
-            else 
-            // odbicie od ścianki kładki
-            if (this.y > main_1.canvasHeight - main_1.paddle.height && this.x > main_1.paddle.x && this.x < main_1.paddle.x + main_1.paddle.width) {
-                this.velocityX = -this.velocityX;
-            }
-            else {
-                // odbicie od kładki
-                if (this.y > main_1.canvasHeight - this.radius - main_1.paddle.height
-                    && this.y < main_1.canvasHeight - this.radius
-                    && this.x > main_1.paddle.x
-                    && this.x < main_1.paddle.x + main_1.paddle.width) {
-                    this.velocityY = -this.velocityY;
-                    // gdy leci w prawo
-                    if (this.velocityX > 0) {
-                        if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
-                            this.velocityX = -this.velocityX;
-                        }
-                        else {
-                            this.velocityX = this.velocityX;
-                        }
+                // going right?
+                if (this.velocityX > 0) {
+                    if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
+                        this.velocityX = -this.velocityX;
                     }
-                    else 
-                    // gdy leci w lewo
-                    if (this.velocityX < 0) {
-                        if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
-                            this.velocityX = this.velocityX;
-                        }
-                        else {
-                            this.velocityX = -this.velocityX;
-                        }
+                    else {
+                        this.velocityX = this.velocityX;
+                    }
+                }
+                else 
+                // going left?
+                if (this.velocityX < 0) {
+                    if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
+                        this.velocityX = this.velocityX;
+                    }
+                    else {
+                        this.velocityX = -this.velocityX;
+                    }
+                }
+            }
+        }
+        // bricks
+        var brickX;
+        var brickY;
+        var brickWidth;
+        var brickHeight;
+        for (var i = 0; i < main_1.brickColumnCount; i++) {
+            for (var j = 0; j < main_1.brickRowCount; j++) {
+                if (main_1.bricks[i][j].active) {
+                    brickX = main_1.bricks[i][j].x;
+                    brickY = main_1.bricks[i][j].y;
+                    brickWidth = main_1.bricks[i][j].width;
+                    brickHeight = main_1.bricks[i][j].height;
+                    if (this.x > brickX - this.radius
+                        && this.x < brickX + brickWidth + this.radius
+                        && this.y > brickY - this.radius
+                        && this.y < brickY + brickHeight + this.radius) {
+                        main_1.bricks[i][j].active = false;
+                        main_1.addPoint();
                     }
                 }
             }

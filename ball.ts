@@ -1,4 +1,4 @@
-import {canvasWidth, canvasHeight, paddle, decLives, addPoint} from './main';
+import {canvasWidth, canvasHeight, paddle, decLives, addPoint, brickColumnCount, brickRowCount, bricks} from './main';
 
 export class Ball {
     velocity : number = 5;
@@ -39,55 +39,89 @@ export class Ball {
         if (this.gameStarted) {
             this.x += this.velocityX;
             this.y += this.velocityY;
-            // ściany
-            if (this.x > canvasWidth - this.radius || this.x < 0 + this.radius) {
-                this.velocityX = -this.velocityX;
-            }
-            // sufit
-            if (this.y < 0 + this.radius) {
+            this.checkCollisions();
+        }
+    }
+
+    checkIfWin(points : number, maxPoints : number) : void {
+        if (points >= maxPoints) {
+            this.gameStarted = false;
+            this.velocityX = this.velocity;
+            this.velocityY = -this.velocity;
+        }
+    }
+
+    checkCollisions() : void {
+        // sides
+        if (this.x > canvasWidth - this.radius || this.x < 0 + this.radius) {
+            this.velocityX = -this.velocityX;
+        }
+        // top
+        if (this.y < 0 + this.radius) {
+            this.velocityY = -this.velocityY;
+        }
+        // below
+        if (this.y > canvasHeight + 50) {
+            decLives();
+            this.gameStarted = false;
+            this.velocityX = this.velocity;
+            this.velocityY = -this.velocity;
+        } else
+        // paddle side
+        if (this.y > canvasHeight - paddle.height && this.x > paddle.x && this.x < paddle.x + paddle.width) {
+            this.velocityX = -this.velocityX;
+        } else {
+            // paddle
+            if (this.y > canvasHeight - this.radius - paddle.height
+                && this.y < canvasHeight - this.radius
+                && this.x > paddle.x 
+                && this.x < paddle.x + paddle.width
+            ) {
                 this.velocityY = -this.velocityY;
-            }
-            // piłka spadła
-            if (this.y > canvasHeight + 50) {
-                decLives();
-                this.gameStarted = false;
-                this.velocityX = this.velocity;
-                this.velocityY = -this.velocity;
-            } else
-            // odbicie od ścianki kładki
-            if (this.y > canvasHeight - paddle.height && this.x > paddle.x && this.x < paddle.x + paddle.width) {
-                this.velocityX = -this.velocityX;
-            } else {
-                // odbicie od kładki
-                if (this.y > canvasHeight - this.radius - paddle.height
-                    && this.y < canvasHeight - this.radius
-                    && this.x > paddle.x 
-                    && this.x < paddle.x + paddle.width
-                ) {
-                    this.velocityY = -this.velocityY;
-                    // gdy leci w prawo
-                    if (this.velocityX > 0) {
-                        if (this.x < (paddle.x + (paddle.width / 2))) {
-                            this.velocityX = -this.velocityX;
-                        } else {
-                            this.velocityX = this.velocityX;
-                        }
-                    } else
-                    // gdy leci w lewo
-                    if (this.velocityX < 0) {
-                        if (this.x < (paddle.x + (paddle.width / 2))) {
-                            this.velocityX = this.velocityX;
-                        } else {
-                            this.velocityX = -this.velocityX;
-                        }
+                // going right?
+                if (this.velocityX > 0) {
+                    if (this.x < (paddle.x + (paddle.width / 2))) {
+                        this.velocityX = -this.velocityX;
+                    } else {
+                        this.velocityX = this.velocityX;
+                    }
+                } else
+                // going left?
+                if (this.velocityX < 0) {
+                    if (this.x < (paddle.x + (paddle.width / 2))) {
+                        this.velocityX = this.velocityX;
+                    } else {
+                        this.velocityX = -this.velocityX;
                     }
                 }
             }
         }
+
+        // bricks
+        let brickX : number;
+        let brickY : number;
+        let brickWidth : number;
+        let brickHeight : number;
+        for (let i=0; i<brickColumnCount; i++) {
+            for (let j=0; j<brickRowCount; j++) {
+                if (bricks[i][j].active) {
+                    brickX = bricks[i][j].x;
+                    brickY = bricks[i][j].y;
+                    brickWidth = bricks[i][j].width;
+                    brickHeight = bricks[i][j].height;
+                    if (this.x > brickX - this.radius 
+                        && this.x < brickX + brickWidth + this.radius 
+                        && this.y > brickY - this.radius
+                        && this.y < brickY + brickHeight + this.radius){
+                            bricks[i][j].active = false;
+                            addPoint();
+                    }
+                }      
+            }
+        }
+
+
     }
-        // zmienna globalna czy spacja kliknieta, updatuje x i ruszam kladka, po spacji puszczam piłeczke,
-        // po przegranej ustawiam flage spacji na false i oczekuje na spacje i odejmuje punkty
-        // zakoncz gre, ustaw flage konca gry na true
         
     
 }

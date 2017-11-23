@@ -13,13 +13,15 @@ export var leftKeyPressed : boolean = false;
 export var rightKeyPressed : boolean = false;
 var gamePaused : boolean = false;
 
-const numberOfLives : number = 2;
+// set 2 after tests
+const numberOfLives : number = 1;
 export var lives : number = numberOfLives;
 export function decLives() : void {
     lives--;
 }
 
 const startingPoints : number = 0;
+var maxPoints : number;
 export var points : number = startingPoints;
 export function addPoint() : void {
     points++;
@@ -29,8 +31,8 @@ export let paddle : Paddle = new Paddle();
 let ballRadius : number = 10;
 let ball : Ball = new Ball(canvas.width / 2, canvas.height - ballRadius - paddle.height, ballRadius);
 
-var brickColumnCount = 6;
-var brickRowCount = 4;
+export var brickColumnCount = 6;
+export var brickRowCount = 4;
 var brickPadding = 3;
 var brickOffsetTop = 100;
 // var brickOffset = (canvasWidth - (brickColumnCount - 1) * brickPadding - brickWidth * brickColumnCount) / 2;
@@ -52,7 +54,7 @@ for (let i=0; i<brickColumnCount; i++) {
     tempOffsetLeft += brickWidth + brickPadding;
 }
 
-
+maxPoints = brickColumnCount * brickRowCount;
 function main() : void {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#ffffff';
@@ -66,6 +68,7 @@ function main() : void {
         ctx.fillText("Press P for pause", canvas.width / 2, 30);
         ctx.globalAlpha=1;
 
+        ball.checkIfWin(points, maxPoints);
         ball.updateStartPosition();
         ball.update();
         paddle.update();
@@ -78,6 +81,7 @@ function main() : void {
     ctx.textAlign = "left";
     ctx.font = '20px Roboto';
     ctx.fillText("Points: " + points, 10, 30);
+
     if (lives < 0) {
         ctx.textAlign = "right";
         ctx.font = '20px Roboto';
@@ -91,6 +95,13 @@ function main() : void {
         ctx.textAlign = "right";
         ctx.font = '20px Roboto';
         ctx.fillText("Lives: " + lives, canvas.width - 10, 30);
+        if (!ball.gameStarted && points >= maxPoints) {
+            ctx.textAlign = "center";
+            ctx.font = '40px Roboto';
+            ctx.fillText("YOU WIN", canvas.width / 2, canvas.height / 2);
+            ctx.font = '20px Roboto';
+            ctx.fillText("Press SPACEBAR to start new game", canvas.width / 2, (canvas.height / 2) + 50);
+        } else
         if (!ball.gameStarted) {
             ctx.textAlign = "center";
             ctx.font = '28px Roboto';
@@ -133,9 +144,14 @@ function arrowKeyUpHandler(e) : void {
 
 function spacePressedHandler(e) : void {
     if (e.keyCode == 32) {
-        if (lives < 0) {
+        if (lives < 0 || points >= maxPoints) {
             lives = numberOfLives;
             points = startingPoints;
+            for (let i=0; i<brickColumnCount; i++) {
+                for (let j=0; j<brickRowCount; j++) {
+                    bricks[i][j].active = true;
+                }
+            }
         }
         ball.gameStarted = true;
     }
@@ -157,58 +173,3 @@ function togglePause() {
         gamePaused = false;
     }
 }
-
-// function mouseMoveHandler(e) {
-//     var relativeX = e.clientX - canvas.offsetLeft;
-//     if(relativeX > 0 && relativeX < canvas.width) {
-//         paddle.x = relativeX - paddle.width/2;
-//     }
-// }
-
-
-// var brickRowCount = 3;
-// var brickColumnCount = 5;
-// var brickWidth = 75;
-// var brickHeight = 20;
-// var brickPadding = 10;
-// var brickOffsetTop = 30;
-// var brickOffsetLeft = 30;
-
-// var bricks = [];
-// for(let c=0; c<brickColumnCount; c++) {
-//     bricks[c] = [];
-//     for(let r=0; r<brickRowCount; r++) {
-//         bricks[c][r] = { x: 0, y: 0 };
-//     }
-// }
-// function drawBricks() {
-//     for(let c=0; c<brickColumnCount; c++) {
-//         for(let r=0; r<brickRowCount; r++) {
-//             var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
-//             var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
-//             bricks[c][r].x = brickX;
-//             bricks[c][r].y = brickY;
-//             ctx.beginPath();
-//             ctx.rect(brickX, brickY, brickWidth, brickHeight);
-//             ctx.fillStyle = "#0095DD";
-//             ctx.fill();
-//             ctx.closePath();
-//         }
-//     }
-// }
-
-// function collisionDetection() {
-//     for(let c=0; c<brickColumnCount; c++) {
-//         for(let r=0; r<brickRowCount; r++) {
-//             var b = bricks[c][r];
-//             if(b.status == 1) {
-//                 if(ball.x > b.x && ball.x < b.x+brickWidth && ball.y > b.y && ball.y < b.y+brickHeight) {
-//                     ball.velocityY = -ball.velocityY;
-//                     // dy = -dy;
-//                     b.status = 0;
-//                 }
-//             }
-//         }
-//     }
-// }
-

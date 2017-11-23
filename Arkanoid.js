@@ -32,51 +32,83 @@ var Ball = /** @class */ (function () {
         if (this.gameStarted) {
             this.x += this.velocityX;
             this.y += this.velocityY;
-            // ściany
-            if (this.x > main_1.canvasWidth - this.radius || this.x < 0 + this.radius) {
-                this.velocityX = -this.velocityX;
-            }
-            // sufit
-            if (this.y < 0 + this.radius) {
+            this.checkCollisions();
+        }
+    };
+    Ball.prototype.checkIfWin = function (points, maxPoints) {
+        if (points >= maxPoints) {
+            this.gameStarted = false;
+            this.velocityX = this.velocity;
+            this.velocityY = -this.velocity;
+        }
+    };
+    Ball.prototype.checkCollisions = function () {
+        // sides
+        if (this.x > main_1.canvasWidth - this.radius || this.x < 0 + this.radius) {
+            this.velocityX = -this.velocityX;
+        }
+        // top
+        if (this.y < 0 + this.radius) {
+            this.velocityY = -this.velocityY;
+        }
+        // below
+        if (this.y > main_1.canvasHeight + 50) {
+            main_1.decLives();
+            this.gameStarted = false;
+            this.velocityX = this.velocity;
+            this.velocityY = -this.velocity;
+        }
+        else 
+        // paddle side
+        if (this.y > main_1.canvasHeight - main_1.paddle.height && this.x > main_1.paddle.x && this.x < main_1.paddle.x + main_1.paddle.width) {
+            this.velocityX = -this.velocityX;
+        }
+        else {
+            // paddle
+            if (this.y > main_1.canvasHeight - this.radius - main_1.paddle.height
+                && this.y < main_1.canvasHeight - this.radius
+                && this.x > main_1.paddle.x
+                && this.x < main_1.paddle.x + main_1.paddle.width) {
                 this.velocityY = -this.velocityY;
-            }
-            // piłka spadła
-            if (this.y > main_1.canvasHeight + 50) {
-                main_1.decLives();
-                this.gameStarted = false;
-                this.velocityX = this.velocity;
-                this.velocityY = -this.velocity;
-            }
-            else 
-            // odbicie od ścianki kładki
-            if (this.y > main_1.canvasHeight - main_1.paddle.height && this.x > main_1.paddle.x && this.x < main_1.paddle.x + main_1.paddle.width) {
-                this.velocityX = -this.velocityX;
-            }
-            else {
-                // odbicie od kładki
-                if (this.y > main_1.canvasHeight - this.radius - main_1.paddle.height
-                    && this.y < main_1.canvasHeight - this.radius
-                    && this.x > main_1.paddle.x
-                    && this.x < main_1.paddle.x + main_1.paddle.width) {
-                    this.velocityY = -this.velocityY;
-                    // gdy leci w prawo
-                    if (this.velocityX > 0) {
-                        if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
-                            this.velocityX = -this.velocityX;
-                        }
-                        else {
-                            this.velocityX = this.velocityX;
-                        }
+                // going right?
+                if (this.velocityX > 0) {
+                    if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
+                        this.velocityX = -this.velocityX;
                     }
-                    else 
-                    // gdy leci w lewo
-                    if (this.velocityX < 0) {
-                        if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
-                            this.velocityX = this.velocityX;
-                        }
-                        else {
-                            this.velocityX = -this.velocityX;
-                        }
+                    else {
+                        this.velocityX = this.velocityX;
+                    }
+                }
+                else 
+                // going left?
+                if (this.velocityX < 0) {
+                    if (this.x < (main_1.paddle.x + (main_1.paddle.width / 2))) {
+                        this.velocityX = this.velocityX;
+                    }
+                    else {
+                        this.velocityX = -this.velocityX;
+                    }
+                }
+            }
+        }
+        // bricks
+        var brickX;
+        var brickY;
+        var brickWidth;
+        var brickHeight;
+        for (var i = 0; i < main_1.brickColumnCount; i++) {
+            for (var j = 0; j < main_1.brickRowCount; j++) {
+                if (main_1.bricks[i][j].active) {
+                    brickX = main_1.bricks[i][j].x;
+                    brickY = main_1.bricks[i][j].y;
+                    brickWidth = main_1.bricks[i][j].width;
+                    brickHeight = main_1.bricks[i][j].height;
+                    if (this.x > brickX - this.radius
+                        && this.x < brickX + brickWidth + this.radius
+                        && this.y > brickY - this.radius
+                        && this.y < brickY + brickHeight + this.radius) {
+                        main_1.bricks[i][j].active = false;
+                        main_1.addPoint();
                     }
                 }
             }
@@ -126,13 +158,15 @@ exports.canvasHeight = canvas.height = 600;
 exports.leftKeyPressed = false;
 exports.rightKeyPressed = false;
 var gamePaused = false;
-var numberOfLives = 2;
+// set 2 after tests
+var numberOfLives = 1;
 exports.lives = numberOfLives;
 function decLives() {
     exports.lives--;
 }
 exports.decLives = decLives;
 var startingPoints = 0;
+var maxPoints;
 exports.points = startingPoints;
 function addPoint() {
     exports.points++;
@@ -141,27 +175,28 @@ exports.addPoint = addPoint;
 exports.paddle = new paddle_1.Paddle();
 var ballRadius = 10;
 var ball = new ball_1.Ball(canvas.width / 2, canvas.height - ballRadius - exports.paddle.height, ballRadius);
-var brickColumnCount = 6;
-var brickRowCount = 4;
+exports.brickColumnCount = 6;
+exports.brickRowCount = 4;
 var brickPadding = 3;
 var brickOffsetTop = 100;
 // var brickOffset = (canvasWidth - (brickColumnCount - 1) * brickPadding - brickWidth * brickColumnCount) / 2;
 // var brickWidth = 100;
 var brickOffset = 80;
-var brickWidth = (exports.canvasWidth - 2 * brickOffset - (brickColumnCount - 1) * brickPadding) / brickColumnCount;
+var brickWidth = (exports.canvasWidth - 2 * brickOffset - (exports.brickColumnCount - 1) * brickPadding) / exports.brickColumnCount;
 var brickHeight = 30;
 exports.bricks = [];
 var tempOffsetLeft = brickOffset;
 var tempOffsetTop = brickOffsetTop;
-for (var i = 0; i < brickColumnCount; i++) {
+for (var i = 0; i < exports.brickColumnCount; i++) {
     exports.bricks[i] = [];
-    for (var j = 0; j < brickRowCount; j++) {
+    for (var j = 0; j < exports.brickRowCount; j++) {
         exports.bricks[i][j] = new brick_1.Brick(tempOffsetLeft, tempOffsetTop, brickWidth, brickHeight);
         tempOffsetTop += brickHeight + brickPadding;
     }
     tempOffsetTop = brickOffsetTop;
     tempOffsetLeft += brickWidth + brickPadding;
 }
+maxPoints = exports.brickColumnCount * exports.brickRowCount;
 function main() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#ffffff';
@@ -173,6 +208,7 @@ function main() {
         ctx.globalAlpha = 0.3;
         ctx.fillText("Press P for pause", canvas.width / 2, 30);
         ctx.globalAlpha = 1;
+        ball.checkIfWin(exports.points, maxPoints);
         ball.updateStartPosition();
         ball.update();
         exports.paddle.update();
@@ -199,14 +235,21 @@ function main() {
         ctx.textAlign = "right";
         ctx.font = '20px Roboto';
         ctx.fillText("Lives: " + exports.lives, canvas.width - 10, 30);
-        if (!ball.gameStarted) {
+        if (!ball.gameStarted && exports.points >= maxPoints) {
+            ctx.textAlign = "center";
+            ctx.font = '40px Roboto';
+            ctx.fillText("YOU WIN", canvas.width / 2, canvas.height / 2);
+            ctx.font = '20px Roboto';
+            ctx.fillText("Press SPACEBAR to start new game", canvas.width / 2, (canvas.height / 2) + 50);
+        }
+        else if (!ball.gameStarted) {
             ctx.textAlign = "center";
             ctx.font = '28px Roboto';
             ctx.fillText("Press SPACEBAR to start", canvas.width / 2, canvas.height / 2);
         }
     }
-    for (var i = 0; i < brickColumnCount; i++) {
-        for (var j = 0; j < brickRowCount; j++) {
+    for (var i = 0; i < exports.brickColumnCount; i++) {
+        for (var j = 0; j < exports.brickRowCount; j++) {
             if (exports.bricks[i][j].active)
                 exports.bricks[i][j].draw(ctx);
         }
@@ -235,9 +278,14 @@ function arrowKeyUpHandler(e) {
 }
 function spacePressedHandler(e) {
     if (e.keyCode == 32) {
-        if (exports.lives < 0) {
+        if (exports.lives < 0 || exports.points >= maxPoints) {
             exports.lives = numberOfLives;
             exports.points = startingPoints;
+            for (var i = 0; i < exports.brickColumnCount; i++) {
+                for (var j = 0; j < exports.brickRowCount; j++) {
+                    exports.bricks[i][j].active = true;
+                }
+            }
         }
         ball.gameStarted = true;
     }
@@ -257,55 +305,6 @@ function togglePause() {
         gamePaused = false;
     }
 }
-// function mouseMoveHandler(e) {
-//     var relativeX = e.clientX - canvas.offsetLeft;
-//     if(relativeX > 0 && relativeX < canvas.width) {
-//         paddle.x = relativeX - paddle.width/2;
-//     }
-// }
-// var brickRowCount = 3;
-// var brickColumnCount = 5;
-// var brickWidth = 75;
-// var brickHeight = 20;
-// var brickPadding = 10;
-// var brickOffsetTop = 30;
-// var brickOffsetLeft = 30;
-// var bricks = [];
-// for(let c=0; c<brickColumnCount; c++) {
-//     bricks[c] = [];
-//     for(let r=0; r<brickRowCount; r++) {
-//         bricks[c][r] = { x: 0, y: 0 };
-//     }
-// }
-// function drawBricks() {
-//     for(let c=0; c<brickColumnCount; c++) {
-//         for(let r=0; r<brickRowCount; r++) {
-//             var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
-//             var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
-//             bricks[c][r].x = brickX;
-//             bricks[c][r].y = brickY;
-//             ctx.beginPath();
-//             ctx.rect(brickX, brickY, brickWidth, brickHeight);
-//             ctx.fillStyle = "#0095DD";
-//             ctx.fill();
-//             ctx.closePath();
-//         }
-//     }
-// }
-// function collisionDetection() {
-//     for(let c=0; c<brickColumnCount; c++) {
-//         for(let r=0; r<brickRowCount; r++) {
-//             var b = bricks[c][r];
-//             if(b.status == 1) {
-//                 if(ball.x > b.x && ball.x < b.x+brickWidth && ball.y > b.y && ball.y < b.y+brickHeight) {
-//                     ball.velocityY = -ball.velocityY;
-//                     // dy = -dy;
-//                     b.status = 0;
-//                 }
-//             }
-//         }
-//     }
-// }
 
 },{"./ball":1,"./brick":2,"./paddle":4}],4:[function(require,module,exports){
 "use strict";
