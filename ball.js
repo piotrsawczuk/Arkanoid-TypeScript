@@ -102,13 +102,39 @@ var Ball = /** @class */ (function () {
                     brickY = main_1.bricks[i][j].y;
                     brickWidth = main_1.bricks[i][j].width;
                     brickHeight = main_1.bricks[i][j].height;
-                    if (this.x > brickX - this.radius
-                        && this.x < brickX + brickWidth + this.radius
-                        && this.y > brickY - this.radius
-                        && this.y < brickY + brickHeight + this.radius) {
+                    // uderzenie od dolu
+                    if (this.x > brickX - this.radius && this.x < brickX + brickWidth + this.radius
+                        && this.y < brickY + brickHeight + this.radius && this.y > brickY + brickHeight - this.radius) {
+                        this.velocityY = -this.velocityY;
                         main_1.bricks[i][j].active = false;
                         main_1.addPoint();
                     }
+                    else 
+                    // uderzenie od góry
+                    if (this.x > brickX - this.radius && this.x < brickX + brickWidth + this.radius
+                        && this.y > brickY - this.radius && this.y < brickY + this.radius) {
+                        this.velocityY = -this.velocityY;
+                        main_1.bricks[i][j].active = false;
+                        main_1.addPoint();
+                    }
+                    else 
+                    // uderzenie od lewej
+                    if (this.y > brickY - this.radius && this.y < brickY + brickHeight + this.radius
+                        && this.x > brickX - this.radius && this.x < brickX + this.radius) {
+                        this.velocityX = -this.velocityX;
+                        main_1.bricks[i][j].active = false;
+                        main_1.addPoint();
+                    }
+                    else 
+                    // uderzenie od prawej
+                    if (this.y > brickY - this.radius && this.y < brickY + brickHeight + this.radius
+                        && this.x < brickX + brickWidth + this.radius && this.x > brickX + brickWidth - this.radius) {
+                        this.velocityX = -this.velocityX;
+                        main_1.bricks[i][j].active = false;
+                        main_1.addPoint();
+                    }
+                    // do sprawdzenia i poprawy
+                    // dodać dźwięki
                 }
             }
         }

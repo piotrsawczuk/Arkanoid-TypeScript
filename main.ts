@@ -55,6 +55,8 @@ for (let i=0; i<brickColumnCount; i++) {
 }
 
 maxPoints = brickColumnCount * brickRowCount;
+
+
 function main() : void {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#ffffff';

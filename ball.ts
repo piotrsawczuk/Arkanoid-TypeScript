@@ -109,13 +109,36 @@ export class Ball {
                     brickY = bricks[i][j].y;
                     brickWidth = bricks[i][j].width;
                     brickHeight = bricks[i][j].height;
-                    if (this.x > brickX - this.radius 
-                        && this.x < brickX + brickWidth + this.radius 
-                        && this.y > brickY - this.radius
-                        && this.y < brickY + brickHeight + this.radius){
-                            bricks[i][j].active = false;
-                            addPoint();
+                    // uderzenie od dolu
+                    if (this.x > brickX - this.radius  && this.x < brickX + brickWidth + this.radius 
+                     && this.y < brickY + brickHeight + this.radius && this.y > brickY + brickHeight - this.radius){
+                        this.velocityY = -this.velocityY;
+                        bricks[i][j].active = false;
+                        addPoint();
+                    } else
+                    // uderzenie od góry
+                    if (this.x > brickX - this.radius  && this.x < brickX + brickWidth + this.radius 
+                     && this.y > brickY - this.radius && this.y < brickY + this.radius){
+                        this.velocityY = -this.velocityY;
+                        bricks[i][j].active = false;
+                        addPoint();
+                    } else
+                    // uderzenie od lewej
+                    if (this.y > brickY - this.radius  && this.y < brickY + brickHeight + this.radius 
+                     && this.x > brickX - this.radius && this.x < brickX + this.radius){
+                        this.velocityX = -this.velocityX;
+                        bricks[i][j].active = false;
+                        addPoint();
+                    } else
+                    // uderzenie od prawej
+                    if (this.y > brickY - this.radius  && this.y < brickY + brickHeight + this.radius 
+                     && this.x < brickX + brickWidth + this.radius && this.x > brickX + brickWidth - this.radius){
+                        this.velocityX = -this.velocityX;
+                        bricks[i][j].active = false;
+                        addPoint();
                     }
+                    // do sprawdzenia i poprawy
+                    // dodać dzwieki
                 }      
             }
         }
