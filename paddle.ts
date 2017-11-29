@@ -5,7 +5,7 @@ export class Paddle {
     height : number = 20;
     x : number = (canvasWidth - this.width ) / 2;
     y : number = (canvasHeight - this.height);
-    paddleMoveDistance : number = 8;
+    paddleMoveDistance : number = 10;
 
     draw(ctx : any) : void {
         ctx.beginPath();

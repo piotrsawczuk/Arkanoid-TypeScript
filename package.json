@@ -1,16 +1,29 @@
 {
   "name": "arkanoid",
+  "productName": "Arkanoid by Piotr Sawczuk",
   "version": "1.0.0",
-  "description": "",
-  "main": "main.ts",
+  "main": "window-starter.js",
   "dependencies": {
     "browserify": "^14.5.0",
     "uniq": "^1.0.1"
   },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "devDependencies": {
+    "electron": "^1.7.9",
+    "electron-winstaller": "^2.6.3",
+    "packager": "0.0.4"
   },
-  "author": "",
-  "license": "ISC"
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Piotr Sawczuk",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/piotrsawczuk/Arkanoid-TypeScript.git"
+  },
+  "bugs": {
+    "url": "https://github.com/piotrsawczuk/Arkanoid-TypeScript/issues"
+  },
+  "homepage": "https://github.com/piotrsawczuk/Arkanoid-TypeScript#readme",
+  "description": "Arkanoid game by Piotr Sawczuk"
 }

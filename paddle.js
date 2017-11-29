@@ -7,7 +7,7 @@ var Paddle = /** @class */ (function () {
         this.height = 20;
         this.x = (main_1.canvasWidth - this.width) / 2;
         this.y = (main_1.canvasHeight - this.height);
-        this.paddleMoveDistance = 8;
+        this.paddleMoveDistance = 10;
     }
     Paddle.prototype.draw = function (ctx) {
         ctx.beginPath();

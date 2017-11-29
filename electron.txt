@@ -1,0 +1,10 @@
+npm install --save electron
+npm init
+npm start
+
+
+https://www.christianengvall.se/electron-packager-tutorial/
+npm install electron-packager --save-dev
+npm install electron-packager -g
+npm install --save-dev electron
+electron-packager . arkanoid-piotr-sawczuk --overwrite --asar=true --platform=win32 --arch=ia32 --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName="Arkanoid by Piotr Sawczuk"

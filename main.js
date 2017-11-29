@@ -5,15 +5,15 @@ var paddle_1 = require("./paddle");
 var brick_1 = require("./brick");
 var canvas = document.querySelector('#canvas');
 var ctx = canvas.getContext('2d');
-// export var canvasWidth = canvas.width = window.innerWidth;
-// export var canvasHeight = canvas.height = window.innerHeight;
-exports.canvasWidth = canvas.width = 800;
-exports.canvasHeight = canvas.height = 600;
+exports.canvasWidth = canvas.width = window.innerWidth;
+exports.canvasHeight = canvas.height = window.innerHeight;
+// export var canvasWidth = canvas.width = 800;
+// export var canvasHeight = canvas.height = 600;
 exports.leftKeyPressed = false;
 exports.rightKeyPressed = false;
 var gamePaused = false;
 // set 2 after tests
-var numberOfLives = 1;
+var numberOfLives = 2;
 exports.lives = numberOfLives;
 function decLives() {
     exports.lives--;
@@ -26,12 +26,25 @@ function addPoint() {
     exports.points++;
 }
 exports.addPoint = addPoint;
+exports.aSounds = [];
+exports.aSounds[1] = new Audio('sounds/Arkanoid SFX (1).wav');
+exports.aSounds[2] = new Audio('sounds/Arkanoid SFX (2).wav');
+exports.aSounds[3] = new Audio('sounds/Arkanoid SFX (3).wav');
+exports.aSounds[4] = new Audio('sounds/Arkanoid SFX (4).wav');
+exports.aSounds[5] = new Audio('sounds/Arkanoid SFX (5).wav');
+exports.aSounds[6] = new Audio('sounds/Arkanoid SFX (6).wav');
+exports.aSounds[7] = new Audio('sounds/Arkanoid SFX (7).wav');
+exports.aSounds[8] = new Audio('sounds/Arkanoid SFX (8).wav');
+exports.aSounds[9] = new Audio('sounds/Arkanoid SFX (9).wav');
+exports.aSounds[10] = new Audio('sounds/Arkanoid SFX (10).wav');
+exports.aSounds[11] = new Audio('sounds/Arkanoid SFX (11).wav');
+exports.aSounds[12] = new Audio('sounds/Arkanoid SFX (12).wav');
 exports.paddle = new paddle_1.Paddle();
 var ballRadius = 10;
 var ball = new ball_1.Ball(canvas.width / 2, canvas.height - ballRadius - exports.paddle.height, ballRadius);
 exports.brickColumnCount = 6;
 exports.brickRowCount = 4;
-var brickPadding = 3;
+var brickPadding = 5;
 var brickOffsetTop = 100;
 // var brickOffset = (canvasWidth - (brickColumnCount - 1) * brickPadding - brickWidth * brickColumnCount) / 2;
 // var brickWidth = 100;
@@ -62,6 +75,10 @@ function main() {
         ctx.globalAlpha = 0.3;
         ctx.fillText("Press P for pause", canvas.width / 2, 30);
         ctx.globalAlpha = 1;
+        if (!ball.soundPlayed) {
+            ball.playLoseSound(exports.lives);
+            ball.playWinSound(exports.points, maxPoints);
+        }
         ball.checkIfWin(exports.points, maxPoints);
         ball.updateStartPosition();
         ball.update();
@@ -117,7 +134,6 @@ addEventListener("keydown", arrowKeyDownHandler, false);
 addEventListener("keyup", arrowKeyUpHandler, false);
 addEventListener("keypress", spacePressedHandler, false);
 addEventListener("keypress", pauseHandler, false);
-// addEventListener("mousemove", mouseMoveHandler, false);
 function arrowKeyDownHandler(e) {
     if (e.keyCode == 37)
         exports.leftKeyPressed = true;
@@ -142,6 +158,7 @@ function spacePressedHandler(e) {
             }
         }
         ball.gameStarted = true;
+        ball.soundPlayed = false;
     }
 }
 function pauseHandler(e) {
@@ -153,6 +170,7 @@ function togglePause() {
     if (!gamePaused) {
         if (ball.gameStarted) {
             gamePaused = true;
+            exports.aSounds[4].cloneNode(true).play();
         }
     }
     else if (gamePaused) {
